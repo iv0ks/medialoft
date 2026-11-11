@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medialoft — Asset library</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark" aria-hidden="true">▚</span>
+            <span class="brand-name">Medialoft</span>
+            <span class="brand-tag">CDN</span>
+        </div>
+        <nav class="topnav">
+            <a href="/" class="active">Library</a>
+            <a href="#" aria-disabled="true">Uploads</a>
+            <a href="#" aria-disabled="true">API keys</a>
+            <a href="#" aria-disabled="true">Usage</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Your media, delivered fast.</h1>
+        <p>Every asset in your library is served from the global edge via
+           <code>/asset?name=&lt;file&gt;.png</code>. {{ images|length }} assets online.</p>
+    </section>
+
+    <main class="grid" aria-label="Asset library">
+        {% for img in images %}
+        {% set label = img.rsplit('.', 1)[0].replace('-', ' ').title() %}
+        <figure class="asset">
+            <a href="/asset?name={{ img }}" aria-label="Open {{ label }}">
+                <img class="thumb" src="/asset?name={{ img }}" alt="{{ label }}" loading="lazy">
+                <figcaption>
+                    <span class="asset-name">{{ label }}</span>
+                    <span class="asset-ext">PNG</span>
+                </figcaption>
+            </a>
+        </figure>
+        {% endfor %}
+    </main>
+
+    <footer class="footer">
+        <span>© Medialoft — edge-cached asset delivery.</span>
+        <span class="muted">Only <code>.png</code> assets are served.</span>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+:root {
+    --accent: #7c3aed;        /* violet — media/CDN identity */
+    --accent-2: #a855f7;
+    --accent-contrast: #ffffff;
+    --bg: #0e0b16;            /* dark-first: a media library feels like a studio */
+    --panel: #171226;
+    --panel-2: #1f1830;
+    --text: #ece9f5;
+    --muted: #a99fc4;
+    --faint: #6f6690;
+    --border: #2a2140;
+    --code-bg: #221a38;
+    --topbar-bg: #0a0712;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* ---- Top bar ------------------------------------------------------------ */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    background: var(--topbar-bg);
+    border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: baseline; gap: 0.5rem; font-weight: 700; }
+.brand-mark { color: var(--accent-2); font-size: 1.2rem; }
+.brand-name { font-size: 1.2rem; letter-spacing: 0.01em; }
+.brand-tag {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent-contrast);
+    background: var(--accent);
+    padding: 0.12rem 0.4rem;
+    border-radius: 4px;
+}
+.topnav a {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 1.2rem;
+    font-size: 0.92rem;
+}
+.topnav a.active { color: var(--text); border-bottom: 2px solid var(--accent-2); padding-bottom: 3px; }
+.topnav a[aria-disabled="true"] { opacity: 0.4; cursor: default; }
+
+/* ---- Hero --------------------------------------------------------------- */
+.hero { max-width: 1040px; margin: 2.2rem auto 1.2rem; padding: 0 1.5rem; }
+.hero h1 {
+    margin: 0 0 0.4rem;
+    font-size: 2rem;
+    background: linear-gradient(90deg, var(--accent-2), #f0abfc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.hero p { color: var(--muted); margin: 0; max-width: 640px; }
+.hero code, .footer code { background: var(--code-bg); padding: 0.1rem 0.35rem; border-radius: 4px; color: #e9d5ff; }
+
+/* ---- Asset grid --------------------------------------------------------- */
+.grid {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+.asset {
+    margin: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.asset:hover { transform: translateY(-3px); border-color: var(--accent); }
+.asset a { text-decoration: none; color: inherit; display: block; }
+.thumb { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.asset figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.8rem;
+    background: var(--panel-2);
+}
+.asset-name { font-weight: 600; font-size: 0.92rem; }
+.asset-ext {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 0.05rem 0.35rem;
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1.3rem 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.83rem;
+}
+.footer .muted { color: var(--faint); }
+
+/* ---- Error page --------------------------------------------------------- */
+.error-panel { max-width: 620px; margin: 4rem auto; padding: 0 1.5rem; text-align: center; }
+.error-code { font-size: 3.5rem; font-weight: 800; margin: 0; color: var(--accent-2); }
+.error-message { color: var(--muted); font-size: 1.1rem; }
+a.back { color: var(--accent-2); text-decoration: none; font-weight: 600; }
+a.back:hover { text-decoration: underline; }
