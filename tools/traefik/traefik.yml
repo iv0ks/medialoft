@@ -1,0 +1,42 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+log:
+  level: INFO
+
+api:
+  dashboard: true
+  insecure: false
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      aliasHeadersStrategy: delete
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      aliasHeadersStrategy: delete
+
+providers:
+  file:
+    filename: "/etc/traefik/dynamic.yml"
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+
+certificatesResolvers:
+  namecheap:
+    acme:
+      email: domains@iv0ks.dev
+      storage: /etc/traefik/certs/acme.json
+      dnsChallenge:
+        provider: namecheap
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"

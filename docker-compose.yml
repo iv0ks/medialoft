@@ -1,0 +1,63 @@
+services:
+  # Open-source HTTP reverse proxy and load balancer designed for cloud-native infrastructure, 
+  # microservices, and containerized environments.
+  traefik:
+    image: "traefik:v3.7.14" # Use a specific, stable version for reliability.
+    container_name: "traefik"
+    security_opt:
+      - "no-new-privileges:true" # Hardening: no setuid/setgid elevation.
+    deploy:
+      resources:
+        limits:
+          memory: 256M # Traefik is efficient; 256MB is plenty.
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ${ROOT_PATH:-.}/tools/traefik:/etc/traefik # Mount config directory (GitOps ready).
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Read-only access for service discovery.
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - iv0ks-dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=namecheap"
+      - "traefik.http.routers.dashboard.tls.domains[0].main=*.iv0ks.dev"
+      - "traefik.http.routers.dashboard.tls.domains[0].sans=iv0ks.dev"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.iv0ks.dev`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+
+  # Flask image CDN to practice path traversal (CWE-22) — a hands-on AppSec lab.
+  medialoft:
+    image: ghcr.io/iv0ks/medialoft:latest
+    container_name: medialoft
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      - HOME=/tmp
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "5000:5000" # direct access: http://localhost:5000
+    networks:
+      - iv0ks-dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.medialoft.rule=Host(`medialoft.iv0ks.dev`)"
+      - "traefik.http.routers.medialoft.entrypoints=websecure"
+      - "traefik.http.routers.medialoft.tls=true"
+      - "traefik.http.routers.medialoft.tls.certresolver=namecheap"
+      - "traefik.http.services.medialoft.loadbalancer.server.port=5000"
+
+networks:
+  iv0ks-dev:
+    external: true

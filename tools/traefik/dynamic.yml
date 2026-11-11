@@ -1,0 +1,15 @@
+http:
+  routers:
+    # Medialoft router.
+    medialoft:
+      rule: "Host(`medialoft.iv0ks.dev`)"
+      entryPoints:
+        - websecure
+      service: medialoft
+      tls: { certResolver: namecheap }
+
+  services:
+    medialoft:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5000/"
