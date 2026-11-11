@@ -36,7 +36,7 @@ services:
 
   # Flask image CDN to practice path traversal (CWE-22) — a hands-on AppSec lab.
   medialoft:
-    image: ghcr.io/iv0ks/medialoft:latest
+    image: ghcr.io/iv0ks/medialoft:v1.0.0
     container_name: medialoft
     restart: unless-stopped
     read_only: true
