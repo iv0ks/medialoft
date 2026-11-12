@@ -1,21 +1,38 @@
 # Medialoft
 
+![CWE-22](https://img.shields.io/badge/CWE--22-Path%20Traversal-red?style=flat-square)
+![Python](https://img.shields.io/badge/Python-Flask-blue?style=flat-square&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Lab-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 [![GHCR](https://img.shields.io/badge/ghcr.io-iv0ks%2Fmedialoft-blue?logo=docker)](https://github.com/iv0ks/medialoft/pkgs/container/medialoft)
-
 
 **Medialoft is an intentionally vulnerable application built for security education.** It is a small image CDN with a deliberate [path traversal](https://owasp.org/www-community/attacks/Path_Traversal)
 (CWE-22) flaw — it only checks that the requested file ends in `.png`, which does nothing to stop traversal — so you can practice finding and exploiting it in a safe and controlled environment.
 
 <br>
 
-## 🗂️ Project layout
+<div align="center">
+
+| 🛡️ Vulnerability | 🎯 Difficulty | 🛠️ Stack | 🚩 Entry point |
+| :--- | :--- | :--- | :--- |
+| Path Traversal (CWE-22) | ⭐⭐⭐⭐ Level 4 (Extension check) | Python · Flask | `GET /asset?name=<file>.png` |
+
+</div>
+
+<br>
+
+> [!NOTE]
+> The guided, spoiler-free path is [GUIDE.md](GUIDE.md); the full answer waits in [SOLUTION.md](SOLUTION.md) whenever you want it.
+
+<br>
+
+## 📂 Project layout
 
 The repository is organised so the vulnerable code is easy to find and reason
 about. Three areas, clearly separated: the **application** itself in `app/`
 (a small Flask app split into factory, routes and config), the **served data**
-in `media/` (the directory the CDN is *meant* to expose), and the **tooling**
+in `media/` (the directory the CDN is _meant_ to expose), and the **tooling**
 around it (Docker, CI/CD, linters). The challenge flag is deliberately kept
-*out* of both the repo and the served directory — see the note under the tree.
+_out_ of both the repo and the served directory — see the note under the tree.
 
 ```
 medialoft/
@@ -43,7 +60,7 @@ medialoft/
 
 The application code lives in `app/` and serves its images from `media/`, just
 like a real CDN would. The target `flag.png` is **not** in the repo: the
-`Dockerfile` writes it to `/app/flag.png` at build time — *outside* the served
+`Dockerfile` writes it to `/app/flag.png` at build time — _outside_ the served
 `media/` dir, and ending in `.png` so it satisfies the extension check — so
 traversal can reach it while the flag stays out of version control.
 
@@ -64,6 +81,8 @@ create it once before the first run:
 docker network create iv0ks-dev
 ```
 
+<br>
+
 #### Option A — just the app (quickest)
 
 ```bash
@@ -72,22 +91,35 @@ docker compose up -d --build medialoft
 
 Reachable directly at **<http://localhost:5000>**. That is all you need for Burp.
 
+<br>
+
 #### Option B — full stack with Traefik (HTTPS + hostname)
 
 ```bash
 docker compose up -d --build
 ```
 
-Now the *same* app is reachable two ways at once:
+Now the _same_ app is reachable two ways at once:
 
 - **<http://localhost:5000>** — direct, no TLS.
 - **<https://medialoft.iv0ks.dev>** — proxied by Traefik with a real certificate.
+
+<br>
+
+> [!CAUTION]
+> The `medialoft.iv0ks.dev` hostname must resolve to the host running the stack.
+> For purely local experiments, Option A (localhost) is simpler and needs no
+> DNS or certificates.
+
+<br>
 
 #### Running without cloning (prebuilt image)
 
 ```bash
 docker run --rm -p 5000:5000 ghcr.io/iv0ks/medialoft:latest
 ```
+
+<br>
 
 #### Developing without Docker
 
@@ -106,34 +138,26 @@ flask --app app.main run --port 5000 --debug
 
 ## 🎯 The Challenge
 
-Medialoft only serves files ending in `.png` from its media library. Your goal:
+### The Scenario
 
-> **Read a file that lives _outside_ the media directory — specifically,
-> capture the flag stored in `flag.png`.**
+Medialoft is an image CDN: it serves assets from a `media/` library and, to be
+"safe", only serves files whose name ends in `.png`. The developer treats that
+extension check as the gate that keeps requests inside the library. You're
+going to prove an extension is not a location.
 
-The flag has the format `FLAG{...}`.
+### Your objective
 
-| | |
-|---|---|
-| **Vulnerability** | Path Traversal (CWE-22) |
-| **Difficulty** | ⭐⭐⭐⭐ Level 4 — file-extension check bypass |
-| **Stack** | Python · Flask · gunicorn |
-| **Entry point** | `GET /asset?name=<file>.png` |
+Read a file that lives _outside_ the media directory — specifically, capture the flag in `flag.png`.
 
-<details>
-<summary>Hint 1</summary>
-Try a plain <code>../</code> traversal to a <code>.txt</code> file — it is
-rejected. So there <em>is</em> a filter. What exactly is it checking?
-</details>
+> [!NOTE]
+> The flag has the format `FLAG{...}`. It is stored as `flag.png` — yes, it ends
+> in `.png` on purpose.
 
-<details>
-<summary>Hint 2</summary>
-The guard only looks at how the name <em>ends</em>. Does an extension check
-stop <code>../</code> sequences? What if your target also ends in
-<code>.png</code>?
-</details>
+### The rules
 
-A full walkthrough lives in [SOLUTION.md](SOLUTION.md) (spoilers!).
+Everything happens over HTTP against the running app — no need to
+read the source to win (though you can). The flag is **not** in the repo: it's
+baked into the container, outside `media/`, so you have to actually reach it.
 
-New to path traversal, or want a guided, non-spoiler approach? Start with the
-**[Learning Guide](GUIDE.md)**.
+> [!TIP]
+> For the full method, the **[Learning Guide](GUIDE.md)** walks you through it.
