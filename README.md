@@ -135,42 +135,5 @@ stop <code>../</code> sequences? What if your target also ends in
 
 A full walkthrough lives in [SOLUTION.md](SOLUTION.md) (spoilers!).
 
-<br>
-
-## 🧰 About this repo (DevSecOps showcase)
-
-Beyond the vulnerability, this repo is a template for shipping a small service
-with sane engineering practices:
-
-- **Conventional Commits** enforced via **commitlint** (pre-commit hook).
-- **pre-commit** suite: `ruff`, `black`, `gitleaks`, `hadolint`, whitespace/EOF.
-- **Centralized CI/CD** via reusable workflows in
-  [`iv0ks/cicd-hub`](https://github.com/iv0ks/cicd-hub): Integration
-  (secrets → vuln → lint → tests on PR), Delivery (build & push the image to
-  GHCR on tag), Security (scheduled CVE scan), Release (release-please).
-- **Dependabot**: daily updates for pip, Docker and GitHub Actions.
-- **Hardened container**: multi-stage build, non-root user, read-only root
-  filesystem, dropped capabilities.
-
-> 💡 **Teaching note:** image/dependency scanners look for *known CVEs*. They
-> will **not** flag Medialoft's path traversal, because it is a business-logic
-> flaw in our own code, not a vulnerable dependency. Catching that class of bug
-> needs SAST / manual review / DAST — exactly what you're practicing here.
-
-### Running the tests
-
-```bash
-pip install -r requirements.txt pytest
-pytest
-```
-
-The suite documents the behaviour executably: a listed `.png` is served, a
-non-`.png` request is rejected, and `../flag.png` slips past the extension
-check and reads the flag — so if someone "fixes" the bug, the exploit test
-turns red.
-
-<br>
-
-## 📄 License
-
-[MIT](LICENSE) — see also [SECURITY.md](SECURITY.md).
+New to path traversal, or want a guided, non-spoiler approach? Start with the
+**[Learning Guide](GUIDE.md)**.
